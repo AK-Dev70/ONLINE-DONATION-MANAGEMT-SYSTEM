@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Charity Jet | Donation History</title>
+
+  <!-- reuse your project stylesheet -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- icons + bootstrap (kept from your original) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+    integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css"
+    integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
+
+  <style>
+    /* page specific styles */
+    main {
+      padding: 40px 16px;
+    }
+
+    .history-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .history-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(28, 39, 77, 0.06);
+    }
+
+    .tools {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .tools .search {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .btn {
+      margin-right: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+
+    th,
+    td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #eee;
+      vertical-align: middle;
+      text-align: left;
+    }
+
+    th {
+      font-weight: 700;
+    }
+
+    .small-muted {
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 40px 10px;
+      color: #6b7280;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      font-weight: 600;
+    }
+
+    .amount {
+      font-weight: 700;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width:880px) {
+
+      th:nth-child(4),
+      td:nth-child(4) {
+        display: none;
+      }
+
+      /* hide phone on small */
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR (same as you provided) -->
+  <nav class="nav nav_top">
+    <div class="logo">
+      <a href="/"><img src="images/logo.png" width="250" alt="Charity Jet logo"></a>
+    </div>
+    <div class="nav_side">
+      <a href="/">HOME</a>
+      <a href="/about">ABOUT US</a>
+      <a href="/donate">DONATE</a>
+      <a href="/contact">CONTACT</a>
+      <a href="/DonationHistory">Donation History</a>
+    </div>
+  </nav>
+
+  <main role="main">
+    <div class="history-wrap">
+      <div class="history-card" aria-labelledby="historyHeading">
+        <h2 id="historyHeading">Donation History</h2>
+        <p class="small-muted">This page reads the donations stored in your browser's localStorage (key
+          <code>donations</code>).</p>
+
+        <div class="tools" role="toolbar" aria-label="History tools">
+          <input id="q" class="search form-control" placeholder="Search by name or phone" aria-label="Search donations">
+          <div class="controls">
+            <label for="sort" class="small-muted" style="margin-right:6px">Sort:</label>
+            <select id="sort" class="form-control" style="width:170px">
+              <option value="newest">Date — newest first</option>
+              <option value="oldest">Date — oldest first</option>
+              <option value="amount-desc">Amount — high to low</option>
+              <option value="amount-asc">Amount — low to high</option>
+              <option value="name-az">Name A → Z</option>
+            </select>
+            <button id="btn-refresh" class="btn btn-default" title="Reload list"><i class="fa fa-refresh"></i>
+              Refresh</button>
+            <button id="btn-export" class="btn btn-primary" title="Export JSON"><i class="fa fa-download"></i>
+              Export</button>
+            <button id="btn-clear" class="btn btn-danger" title="Clear all donations"><i class="fa fa-trash"></i> Clear
+              All</button>
+            <a href="/donate" class="btn btn-success" title="Make a donation"><i class="fa fa-heart"></i> Donate</a>
+          </div>
+        </div>
+
+        <div id="summaryBar"
+          style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px">
+          <div><span class="pill" id="count">0 donations</span></div>
+          <div class="right"><span class="pill">Total: ₹ <span id="total">0.00</span></span></div>
+        </div>
+
+        <div id="listContainer" aria-live="polite">
+          <!-- table rendered here -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER (same as you provided) -->
+  <footer>
+    <div class="pages">
+      <a href="/"><img class="aimg" src="images/logo.png" width="250" alt="Charity Jet logo"></a>
+      <p>Charity Jet cares for needy children by empowering their caregivers to do their best work, with compassion,
+        grace, integrity and excellence. Our end goal is to support children worldwide and see every child reach the
+        potential that God has for them.</p>
+      <a href="https://www.facebook.com/" target="_blank" rel="noreferrer"><i class="fa fa-facebook"
+          aria-hidden="true"></i></a>
+      <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer"><i class="fa fa-linkedin"
+          aria-hidden="true"></i></a>
+      <a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a>
+      <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+    </div>
+
+    <div class="doc">
+      <h3>Navigation</h3>
+      <a href="/">Home</a>
+      <a href="/about">About</a>
+      <a href="/donate">Donate</a>
+      <a href="/contact">Contact</a>
+      <a href="/DonationHistory">Donation History</a>
+    </div>
+
+    <div class="contact">
+      <h3>Contact Us</h3>
+      <a href="/contact" target="_blank">Techno Main Salt Lake, Kolkata, West Bengal-700106</a>
+      <a href="tel: +91 87458 26458">+91 87458 26458</a>
+      <a href="mailto:charityjet@gmail.com">charityjet@gmail.com</a>
+    </div>
+
+    <div class="social">
+      <h3>Support</h3>
+      <p>Help us shape a better future for children all over the world</p>
+      <div class="side_btn">
+        <a href="/donate">JOIN US TODAY</a>
+      </div>
+    </div>
+
+    <hr>
+    <p>Copyright &copy; 2025 Charity Jet. All rights reserved.</p>
+  </footer>
+
+  <script>
+    (function () {
+      const KEY = 'donations';
+
+      // Elements
+      const qEl = document.getElementById('q');
+      const sortEl = document.getElementById('sort');
+      const listContainer = document.getElementById('listContainer');
+      const btnRefresh = document.getElementById('btn-refresh');
+      const btnExport = document.getElementById('btn-export');
+      const btnClear = document.getElementById('btn-clear');
+      const countEl = document.getElementById('count');
+      const totalEl = document.getElementById('total');
+
+      // Read from localStorage safely
+      function readAll() {
+        try {
+          const raw = localStorage.getItem(KEY);
+          const arr = JSON.parse(raw || '[]');
+          if (!Array.isArray(arr)) return [];
+          return arr.map(normalizeRecord);
+        } catch (e) {
+          console.warn('Could not read donations', e);
+          return [];
+        }
+      }
+
+      function normalizeRecord(r) {
+        // Ensure expected shape and types
+        return {
+          firstName: (r.firstName || '').toString(),
+          lastName: (r.lastName || '').toString(),
+          phone: (r.phone || '').toString(),
+          amount: Number(r.amount) || 0,
+          timestamp: r.timestamp ? r.timestamp.toString() : new Date().toISOString()
+        };
+      }
+
+      // Save back (used for deletion)
+      function saveAll(arr) {
+        try {
+          localStorage.setItem(KEY, JSON.stringify(arr));
+        } catch (e) { console.warn('Save failed', e); }
+      }
+
+      // Format timestamp to local readable string (India locale fallback)
+      function fmtDate(iso) {
+        try {
+          const d = new Date(iso);
+          if (isNaN(d)) return iso;
+          // show date + time
+          return d.toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+        } catch (e) {
+          return iso;
+        }
+      }
+
+      // Render list (table)
+      function renderList() {
+        const q = (qEl.value || '').trim().toLowerCase();
+        const sort = sortEl.value;
+        let rows = readAll();
+
+        // filter
+        if (q) {
+          rows = rows.filter(r => {
+            const name = (r.firstName + ' ' + r.lastName).toLowerCase();
+            return name.includes(q) || (r.phone || '').toString().toLowerCase().includes(q);
+          });
+        }
+
+        // sort
+        rows.sort((a, b) => {
+          if (sort === 'newest') return new Date(b.timestamp) - new Date(a.timestamp);
+          if (sort === 'oldest') return new Date(a.timestamp) - new Date(b.timestamp);
+          if (sort === 'amount-desc') return b.amount - a.amount;
+          if (sort === 'amount-asc') return a.amount - b.amount;
+          if (sort === 'name-az') {
+            const na = (a.firstName + ' ' + a.lastName).toLowerCase();
+            const nb = (b.firstName + ' ' + b.lastName).toLowerCase();
+            return na.localeCompare(nb);
+          }
+          return 0;
+        });
+
+        // Summary totals
+        const total = rows.reduce((s, r) => s + Number(r.amount || 0), 0);
+        countEl.textContent = `${rows.length} donation${rows.length === 1 ? '' : 's'}`;
+        totalEl.textContent = Number(total || 0).toFixed(2);
+
+        // Build table
+        if (rows.length === 0) {
+          listContainer.innerHTML = '<div class="empty"><strong>No donations yet</strong><div class="small-muted" style="margin-top:8px">Make a donation on the Donate page to see it here (stored in this browser).</div></div>';
+          return;
+        }
+
+        let html = '<div style="overflow:auto"><table class="table table-striped table-hover" role="table"><thead><tr>';
+        html += '<th>Name</th><th class="hidden-xs">Phone</th><th>Amount (₹)</th><th>Date</th><th class="right">Actions</th>';
+        html += '</tr></thead><tbody>';
+
+        rows.forEach((r, idx) => {
+          const name = `${escapeHtml(r.firstName)} ${escapeHtml(r.lastName)}`.trim();
+          const phone = escapeHtml(r.phone || '—');
+          const amount = Number(r.amount || 0).toFixed(2);
+          const date = fmtDate(r.timestamp);
+          html += `<tr data-idx="${idx}">
+                    <td><strong>${name || '—'}</strong><div class="small-muted">${escapeHtml(r.firstName)} ${escapeHtml(r.lastName)}</div></td>
+                    <td class="hidden-xs">${phone}</td>
+                    <td class="amount">₹ ${amount}</td>
+                    <td>${date}</td>
+                    <td class="right">
+                      <button class="btn btn-xs btn-default btn-view" title="View" data-idx="${idx}"><i class="fa fa-eye"></i></button>
+                      <button class="btn btn-xs btn-danger btn-delete" title="Delete" data-idx="${idx}"><i class="fa fa-trash"></i></button>
+                    </td>
+                   </tr>`;
+        });
+
+        html += '</tbody></table></div>';
+        listContainer.innerHTML = html;
+
+        // attach handlers for view/delete
+        Array.from(listContainer.querySelectorAll('.btn-delete')).forEach(b => {
+          b.addEventListener('click', onDeleteClicked);
+        });
+        Array.from(listContainer.querySelectorAll('.btn-view')).forEach(b => {
+          b.addEventListener('click', onViewClicked);
+        });
+      }
+
+      // Escape HTML to avoid injection if someone stored unsafe data
+      function escapeHtml(s) {
+        return String(s || '').replace(/[&<>"'`=\/]/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;', '`': '&#x60;', '=': '&#x3D;' }[c];
+        });
+      }
+
+      // Delete by index relative to filtered/sorted view -> we need to map back to actual storage
+      function onDeleteClicked(ev) {
+        const btn = ev.currentTarget;
+        const idx = Number(btn.getAttribute('data-idx'));
+        if (!Number.isFinite(idx)) return;
+        // confirm
+        if (!confirm('Delete this donation record? This cannot be undone.')) return;
+
+        // We must remove the item from the underlying storage array in the same order we use in render.
+        // Simpler approach: re-run readAll, apply current filter+sort, then remove the specific record by matching unique properties (timestamp + phone + amount).
+        const q = (qEl.value || '').trim().toLowerCase();
+        const sort = sortEl.value;
+        const underlying = readAll();
+        let view = underlying.slice();
+
+        // apply filter (same as render)
+        if (q) {
+          view = view.filter(r => {
+            const name = (r.firstName + ' ' + r.lastName).toLowerCase();
+            return name.includes(q) || (r.phone || '').toString().toLowerCase().includes(q);
+          });
+        }
+
+        // sort same as render
+        view.sort((a, b) => {
+          if (sort === 'newest') return new Date(b.timestamp) - new Date(a.timestamp);
+          if (sort === 'oldest') return new Date(a.timestamp) - new Date(b.timestamp);
+          if (sort === 'amount-desc') return b.amount - a.amount;
+          if (sort === 'amount-asc') return a.amount - b.amount;
+          if (sort === 'name-az') {
+            const na = (a.firstName + ' ' + a.lastName).toLowerCase();
+            const nb = (b.firstName + ' ' + b.lastName).toLowerCase();
+            return na.localeCompare(nb);
+          }
+          return 0;
+        });
+
+        const record = view[idx];
+        if (!record) {
+          alert('Record not found.');
+          return;
+        }
+
+        // remove the first matching record in underlying array by exact match on timestamp + phone + amount
+        const keep = [];
+        let removed = false;
+        for (const r of underlying) {
+          if (!removed && r.timestamp === record.timestamp && String(r.phone) === String(record.phone) && Number(r.amount) === Number(record.amount)) {
+            removed = true;
+            continue; // skip this one (delete)
+          }
+          keep.push(r);
+        }
+
+        saveAll(keep);
+        renderList();
+      }
+
+      // Show a simple alert with details (or you can create a modal)
+      function onViewClicked(ev) {
+        const idx = Number(ev.currentTarget.getAttribute('data-idx'));
+        const q = (qEl.value || '').trim().toLowerCase();
+        const sort = sortEl.value;
+        const underlying = readAll();
+
+        let view = underlying.slice();
+        if (q) {
+          view = view.filter(r => {
+            const name = (r.firstName + ' ' + r.lastName).toLowerCase();
+            return name.includes(q) || (r.phone || '').toString().toLowerCase().includes(q);
+          });
+        }
+        view.sort((a, b) => {
+          if (sort === 'newest') return new Date(b.timestamp) - new Date(a.timestamp);
+          if (sort === 'oldest') return new Date(a.timestamp) - new Date(b.timestamp);
+          if (sort === 'amount-desc') return b.amount - a.amount;
+          if (sort === 'amount-asc') return a.amount - b.amount;
+          if (sort === 'name-az') {
+            const na = (a.firstName + ' ' + a.lastName).toLowerCase();
+            const nb = (b.firstName + ' ' + b.lastName).toLowerCase();
+            return na.localeCompare(nb);
+          }
+          return 0;
+        });
+
+        const r = view[idx];
+        if (!r) { alert('Record not found'); return; }
+        const msg = `Name: ${r.firstName} ${r.lastName}\nPhone: ${r.phone}\nAmount: ₹ ${Number(r.amount).toFixed(2)}\nDate: ${fmtDate(r.timestamp)}\nTimestamp (ISO): ${r.timestamp}`;
+        alert(msg);
+      }
+
+      // Export visible (filtered/sorted) as JSON file
+      function exportVisible() {
+        // build visible array same as renderList uses
+        const q = (qEl.value || '').trim().toLowerCase();
+        const sort = sortEl.value;
+        let rows = readAll();
+
+        if (q) {
+          rows = rows.filter(r => {
+            const name = (r.firstName + ' ' + r.lastName).toLowerCase();
+            return name.includes(q) || (r.phone || '').toString().toLowerCase().includes(q);
+          });
+        }
+
+        rows.sort((a, b) => {
+          if (sort === 'newest') return new Date(b.timestamp) - new Date(a.timestamp);
+          if (sort === 'oldest') return new Date(a.timestamp) - new Date(b.timestamp);
+          if (sort === 'amount-desc') return b.amount - a.amount;
+          if (sort === 'amount-asc') return a.amount - b.amount;
+          if (sort === 'name-az') {
+            const na = (a.firstName + ' ' + a.lastName).toLowerCase();
+            const nb = (b.firstName + ' ' + b.lastName).toLowerCase();
+            return na.localeCompare(nb);
+          }
+          return 0;
+        });
+
+        const blob = new Blob([JSON.stringify(rows, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'donations.json';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      // Clear all donations (confirm)
+      function clearAll() {
+        if (!confirm('Delete ALL donation records from this browser? This cannot be undone.')) return;
+        try { localStorage.removeItem(KEY); } catch (e) { console.warn(e); }
+        renderList();
+      }
+
+      // Event wiring
+      qEl.addEventListener('input', debounce(renderList, 200));
+      sortEl.addEventListener('change', renderList);
+      btnRefresh.addEventListener('click', renderList);
+      btnExport.addEventListener('click', exportVisible);
+      btnClear.addEventListener('click', clearAll);
+
+      // Debounce helper
+      function debounce(fn, ms) {
+        let t;
+        return function () {
+          clearTimeout(t);
+          t = setTimeout(() => fn.apply(this, arguments), ms);
+        };
+      }
+
+      // initial render
+      renderList();
+
+      // Expose a small helper to add a dummy donation (for testing)
+      window._donationHistory = {
+        addDummy: function () {
+          const arr = readAll();
+          arr.push({
+            firstName: 'Test',
+            lastName: 'Donor',
+            phone: '+91 98765 43210',
+            amount: 100,
+            timestamp: new Date().toISOString()
+          });
+          saveAll(arr);
+          renderList();
+        }
+      };
+    })();
+  </script>
+</body>
+
+</html>

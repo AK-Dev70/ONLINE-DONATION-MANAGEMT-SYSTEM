@@ -1,0 +1,459 @@
+<!-- payment.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Charity Jet | Payment</title>
+
+    <!-- existing project stylesheet -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- icons + bootstrap (kept from your original) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+        integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css"
+        integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
+
+    <!-- small component styles to make the payment form look modern -->
+    <style>
+        main,
+        .payment-wrap,
+        .donate,
+        .container {
+            margin-top: 40px;
+        }
+
+        /* Payment card */
+        .payment-wrap {
+            display: flex;
+            justify-content: center;
+            padding: 48px 16px;
+            background: linear-gradient(180deg, #f7f9fc 0%, #ffffff 100%);
+        }
+
+        .payment-card {
+            width: 100%;
+            max-width: 920px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(28, 39, 77, 0.08);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 0;
+        }
+
+        /* left: content, right: summary */
+        .payment-left {
+            padding: 36px;
+        }
+
+        .payment-right {
+            background: linear-gradient(180deg, #0f4c81 0%, #0a3570 100%);
+            color: #fff;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .payment-left h2 {
+            margin-top: 0;
+            font-size: 26px;
+            color: #1c274d;
+        }
+
+        .muted {
+            color: #6b7280;
+            margin-bottom: 18px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+            width: 100%;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid #e3e6ee;
+            font-size: 15px;
+            color: #1c274d;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color .15s, box-shadow .15s;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #0f4c81;
+            box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.06);
+        }
+
+        .label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: #24303f;
+        }
+
+        .small {
+            font-size: 13px;
+            color: #7a8696;
+        }
+
+        .btn-primary-cta {
+            display: inline-block;
+            padding: 12px 20px;
+            background: linear-gradient(90deg, #ff7a18, #ff0047);
+            border-radius: 10px;
+            color: #fff;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 8px 20px rgba(255, 0, 71, 0.12);
+            transition: transform .08s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary-cta:active {
+            transform: translateY(1px);
+        }
+
+        .summary-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .summary-box {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 8px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .error {
+            color: #b91c1c;
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        @media (max-width: 880px) {
+            .payment-card {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-right {
+                order: -1;
+            }
+
+            .payment-left {
+                padding: 24px;
+            }
+
+            .payment-right {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR (same as you provided) -->
+    <nav class="nav nav_top">
+        <div class="logo">
+            <a href="/"><img src="images/logo.png" width="250" alt="Charity Jet logo"></a>
+        </div>
+        <div class="nav_side">
+            <a href="/">HOME</a>
+            <a href="/about">ABOUT US</a>
+            <a href="/donate">DONATE</a>
+            <a href="/contact">CONTACT</a>
+            <a href="/DonationHistory">Donation History</a>
+        </div>
+    </nav>
+
+    <!-- PAYMENT FORM -->
+    <main class="payment-wrap" role="main">
+        <div class="payment-card" aria-labelledby="paymentHeading">
+
+            <!-- LEFT: form -->
+            <section class="payment-left" aria-label="Donation form">
+                <h2 id="paymentHeading">Make a Secure Donation</h2>
+                <p class="muted">Your generosity helps us change lives. Fill the form below to proceed. Fields marked *
+                    are required.</p>
+
+                <form id="donationForm" novalidate>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="label" for="firstName">First Name *</label>
+                            <input id="firstName" name="firstName" type="text" required autocomplete="given-name"
+                                placeholder="Enter First name">
+                            <div class="error" id="err-firstName" aria-live="polite"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="label" for="lastName">Last Name *</label>
+                            <input id="lastName" name="lastName" type="text" required autocomplete="family-name"
+                                placeholder="Enter Last name">
+                            <div class="error" id="err-lastName" aria-live="polite"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="label" for="phone">Phone No *</label>
+                            <input id="phone" name="phone" type="tel" required placeholder="+91 98765 43210"
+                                pattern="[\d+\-\s()]{6,20}">
+                            <div class="small">We'll only use this to contact you about your donation if necessary.
+                            </div>
+                            <div class="error" id="err-phone" aria-live="polite"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="label" for="email">Email (optional)</label>
+                            <input id="email" name="email" type="email" placeholder="youmail@gmail.com">
+                            <div class="error" id="err-email" aria-live="polite"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label" for="address">Address (optional)</label>
+                        <textarea id="address" name="address" rows="3"
+                            placeholder="Street, City, State, Country"></textarea>
+                        <div class="error" id="err-address" aria-live="polite"></div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="flex:1">
+                            <label class="label" for="amount">Payment Amount (₹) *</label>
+                            <input id="amount" name="amount" type="number" min="10" step="10" required
+                                placeholder="100.00">
+                            <div class="error" id="err-amount" aria-live="polite"></div>
+                        </div>
+                        <div class="form-group" style="width:200px;align-self:end">
+                            <button id="payNow" type="submit" class="btn-primary-cta" aria-label="Pay now">Pay
+                                Now</button>
+                        </div>
+                    </div>
+
+                    <div id="formMessage" class="error" aria-live="polite"></div>
+                </form>
+            </section>
+
+            <!-- RIGHT: summary / help -->
+            <aside class="payment-right" aria-label="Donation summary">
+                <div>
+                    <div class="summary-title">Donation Summary</div>
+                    <div class="summary-box">
+                        <div class="summary-row"><span>Donor</span><span id="sum-donor">—</span></div>
+                        <div class="summary-row"><span>Phone</span><span id="sum-phone">—</span></div>
+                        <div class="summary-row"><span>Amount (₹)</span><span id="sum-amount">0.00</span></div>
+                    </div>
+
+                    <p class="small" style="margin-top:12px">All transactions are secure. This demo stores donor details
+                        in your browser's local storage for testing. In production, send details to a secure server and
+                        process payments with a PCI-compliant gateway.</p>
+                </div>
+
+                <div style="margin-top:18px">
+                    <div style="font-size:13px; opacity:0.95">Need help?</div>
+                    <div style="margin-top:8px; font-weight:700">Contact us: <a href="tel:+918745826458"
+                            style="color:#fff; text-decoration:underline">+91 87458 26458</a></div>
+                </div>
+            </aside>
+
+        </div>
+    </main>
+
+    <!-- FOOTER (same as you provided) -->
+    <footer>
+        <div class="pages">
+            <a href="/"><img class="aimg" src="images/logo.png" width="250" alt="Charity Jet logo"></a>
+            <p>Charity Jet cares for needy children by empowering their caregivers to do their best work, with
+                compassion, grace, integrity and excellence. Our end goal is to support children worldwide and see every
+                child reach the potential that God has for them.</p>
+            <a href="https://www.facebook.com/" target="_blank" rel="noreferrer"><i class="fa fa-facebook"
+                    aria-hidden="true"></i></a>
+            <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer"><i class="fa fa-linkedin"
+                    aria-hidden="true"></i></a>
+            <a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a>
+            <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+        </div>
+
+        <div class="doc">
+            <h3>Navigation</h3>
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/donate">Donate</a>
+            <a href="/contact">Contact</a>
+            <a href="/DonationHistory">Donation History</a>
+        </div>
+
+        <div class="contact">
+            <h3>Contact Us</h3>
+            <a href="/contact" target="_blank">Techno Main Salt Lake, Kolkata, West Bengal-700106</a>
+            <a href="tel: +91 87458 26458">+91 87458 26458</a>
+            <a href="mailto:charityjet@gmail.com">charityjet@gmail.com</a>
+        </div>
+
+        <div class="social">
+            <h3>Support</h3>
+            <p>Help us shape a better future for children all over the world</p>
+            <div class="side_btn">
+                <a href="/donate">JOIN US TODAY</a>
+            </div>
+        </div>
+
+        <hr>
+        <p>Copyright &copy; 2025 Charity Jet. All rights reserved.</p>
+    </footer>
+
+    <!-- Client-side JS: validation, localStorage save, redirect -->
+    <script>
+        (function () {
+            const form = document.getElementById('donationForm');
+            const errFirst = document.getElementById('err-firstName');
+            const errLast = document.getElementById('err-lastName');
+            const errPhone = document.getElementById('err-phone');
+            const errEmail = document.getElementById('err-email');
+            const errAmount = document.getElementById('err-amount');
+            const formMessage = document.getElementById('formMessage');
+
+            const sumDonor = document.getElementById('sum-donor');
+            const sumPhone = document.getElementById('sum-phone');
+            const sumAmount = document.getElementById('sum-amount');
+
+            // Helper to update summary area live
+            function updateSummary() {
+                const f = form;
+                const name = (f.firstName.value || '') + (f.lastName.value ? ' ' + f.lastName.value : '');
+                sumDonor.textContent = name.trim() || '—';
+                sumPhone.textContent = f.phone.value || '—';
+                const amt = parseFloat(f.amount.value || 0);
+                sumAmount.textContent = isFinite(amt) ? amt.toFixed(2) : '0.00';
+            }
+
+            // live update when user types
+            form.addEventListener('input', updateSummary);
+
+            // Basic validators
+            function validate() {
+                let ok = true;
+                errFirst.textContent = '';
+                errLast.textContent = '';
+                errPhone.textContent = '';
+                errEmail.textContent = '';
+                errAmount.textContent = '';
+                formMessage.textContent = '';
+
+                const first = form.firstName.value.trim();
+                if (!first) { errFirst.textContent = 'First name is required'; ok = false; }
+
+                const last = form.lastName.value.trim();
+                if (!last) { errLast.textContent = 'Last name is required'; ok = false; }
+
+                const phone = form.phone.value.trim();
+                // simple phone sanity: at least 6 digits/characters
+                if (!phone) { errPhone.textContent = 'Phone number is required'; ok = false; }
+                else if (phone.replace(/[^0-9]/g, '').length < 6) { errPhone.textContent = 'Enter a valid phone number'; ok = false; }
+
+                const email = form.email.value.trim();
+                if (email && !/^\S+@\S+\.\S+$/.test(email)) { errEmail.textContent = 'Invalid email address'; ok = false; }
+
+                const amountVal = parseFloat(form.amount.value);
+                if (!isFinite(amountVal) || amountVal <= 0) {
+                    errAmount.textContent = 'Amount must be greater than 0';
+                    ok = false;
+                }
+
+                return ok;
+            }
+
+            // Save donation to localStorage (append to "donations" array)
+            function saveToLocal(firstName, lastName, phone, amount) {
+                try {
+                    const key = 'donations';
+                    const existing = JSON.parse(localStorage.getItem(key) || '[]');
+                    const record = {
+                        firstName: firstName,
+                        lastName: lastName,
+                        phone: phone,
+                        amount: Number(amount),
+                        timestamp: new Date().toISOString()
+                    };
+                    existing.push(record);
+                    localStorage.setItem(key, JSON.stringify(existing));
+                } catch (e) {
+                    // if localStorage fails (e.g. private mode), continue without crashing
+                    console.warn('Could not save to localStorage', e);
+                }
+            }
+
+            // On submit
+            form.addEventListener('submit', function (ev) {
+                ev.preventDefault();
+                if (!validate()) {
+                    formMessage.textContent = 'Please fix the errors above.';
+                    return;
+                }
+
+                // collect values
+                const firstName = form.firstName.value.trim();
+                const lastName = form.lastName.value.trim();
+                const phone = form.phone.value.trim();
+                const amount = parseFloat(form.amount.value).toFixed(2);
+
+                // store to localStorage
+                saveToLocal(firstName, lastName, phone, amount);
+
+                // Optionally set a flag or store lastDonation for thankyou page to read
+                try {
+                    localStorage.setItem('lastDonation', JSON.stringify({ firstName, lastName, phone, amount }));
+                } catch (e) { /* ignore */ }
+
+                // simulate processing UI (disable button briefly)
+                const btn = document.getElementById('payNow');
+                btn.disabled = true;
+                btn.textContent = 'Processing...';
+
+                // redirect to thankyou page
+                // small delay so user sees feedback (100-400ms)
+                setTimeout(function () {
+                    window.location.href = '/thankyou';
+                }, 300);
+            });
+
+            // Initialize summary on load
+            updateSummary();
+        })();
+    </script>
+</body>
+
+</html>
