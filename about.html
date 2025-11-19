@@ -27,6 +27,9 @@
             <a href="/donate">DONATE</a>
             <a href="/contact">CONTACT</a>
             <a href="/DonationHistory">Donation History</a>
+            <a href="/login" id="navLogin">LOGIN</a>
+            <a href="/signup" id="navSignup">SIGN UP</a>
+            <a href="#" id="navLogout" style="display:none">LOG OUT</a>
         </div>
     </nav>
     <!-- --------------------------------------------MAIN----------------------------------------------------------->
@@ -112,4 +115,18 @@
         <p>Copyright &copy; 2025 Charity Jet. All rights reserved.</p>
     </footer>
 </body>
+<script>
+(function(){
+  function getAuth(){try{return JSON.parse(localStorage.getItem('authUser')||'null');}catch(e){return null}}
+  function setNav(){
+    var u=getAuth();
+    var login=document.getElementById('navLogin');
+    var signup=document.getElementById('navSignup');
+    var logout=document.getElementById('navLogout');
+    if(u){if(login)login.style.display='none';if(signup)signup.style.display='none';if(logout)logout.style.display='inline-block'}else{if(login)login.style.display='inline-block';if(signup)signup.style.display='inline-block';if(logout)logout.style.display='none'}
+    if(logout){logout.onclick=function(e){e.preventDefault();localStorage.removeItem('authUser');setNav()}}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setNav);else setNav()
+})()
+</script>
 </html>

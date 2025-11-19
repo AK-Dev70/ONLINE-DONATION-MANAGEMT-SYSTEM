@@ -20,6 +20,8 @@ app.get("/donate", (req, res) => res.sendFile(path.join(__dirname, "donate.html"
 app.get("/thankyou", (req, res) => res.sendFile(path.join(__dirname, "thankyou.html")));
 app.get("/payment", (req, res) => res.sendFile(path.join(__dirname, "payment.html")));
 app.get("/DonationHistory", (req, res) => res.sendFile(path.join(__dirname, "DonationHistory.html")));
+app.get("/login", (req, res) => res.sendFile(path.join(__dirname, "login.html")));
+app.get("/signup", (req, res) => res.sendFile(path.join(__dirname, "signup.html")));
 
 // Fallback: for any other request, serve index.html
 // NOTE: use app.use(...) or '/*' instead of raw '*' to avoid path-to-regexp errors.

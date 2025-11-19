@@ -28,6 +28,9 @@
             <a href="/donate">DONATE</a>
             <a href="/contact">CONTACT</a>
             <a href="/DonationHistory">Donation History</a>
+            <a href="/login" id="navLogin">LOGIN</a>
+            <a href="/signup" id="navSignup">SIGN UP</a>
+            <a href="#" id="navLogout" style="display:none">LOG OUT</a>
         </div>
     </nav>
     <!-- --------------------------------------------MAIN----------------------------------------------------------->
@@ -138,16 +141,30 @@
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
 <script type="text/javascript">
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzmY7HJmUEupsd8UBLj-aTxEsPcKQEWFYaxFA44IcIYrYCjanY1WcTF4zyKYXFQubtbTA/exec'
-            const form = document.forms['submit-googlesheet']
-          
-            form.addEventListener('submit', e => {
-              e.preventDefault()
-              fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-                .then(response => alert("Thanks you for your valuable feedback!"))
-                .catch(error => console.error('Error!', error.message))
-            })
-          
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzmY7HJmUEupsd8UBLj-aTxEsPcKQEWFYaxFA44IcIYrYCjanY1WcTF4zyKYXFQubtbTA/exec';
+    const form = document.forms['submit-googlesheet'];
+    if (form) {
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+          .then(response => alert('Thanks you for your valuable feedback!'))
+          .catch(error => console.error('Error!', error.message));
+      });
+    }
+</script>
+<script>
+(function(){
+  function getAuth(){try{return JSON.parse(localStorage.getItem('authUser')||'null');}catch(e){return null}}
+  function setNav(){
+    var u=getAuth();
+    var login=document.getElementById('navLogin');
+    var signup=document.getElementById('navSignup');
+    var logout=document.getElementById('navLogout');
+    if(u){if(login)login.style.display='none';if(signup)signup.style.display='none';if(logout)logout.style.display='inline-block'}else{if(login)login.style.display='inline-block';if(signup)signup.style.display='inline-block';if(logout)logout.style.display='none'}
+    if(logout){logout.onclick=function(e){e.preventDefault();localStorage.removeItem('authUser');setNav()}}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setNav);else setNav()
+})()
 </script>
 </body>
 </html>
